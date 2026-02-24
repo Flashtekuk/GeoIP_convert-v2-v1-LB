@@ -5,7 +5,7 @@
 # https://github.com/emphazer/GeoIP_convert-v2-v1
 
 # requirements python2.7
-# ipaddr  == (2.2.0) 
+# ipaddr  == (2.2.0)
 # pygeoip == (0.3.2)
 
 # chmod +x geoip_convert-v2-v1.sh
@@ -53,7 +53,7 @@ fi
 
 DATE_TODAY=$(date +"%Y%m%d")
 
-mkdir $DATE_TODAY && cd $DATE_TODAY && (
+mkdir -p $DATE_TODAY && cd $DATE_TODAY && (
 
         $PIP install --upgrade pygeoip==0.3.2 ipaddr==2.2.0 &>/dev/null
 
@@ -67,7 +67,7 @@ mkdir $DATE_TODAY && cd $DATE_TODAY && (
         chmod +x mmdb-convert*.py csv2dat.py
 
         # download the geolite2 country database
-        curl -s "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country&license_key=$KEY&suffix=tar.gz" > GeoLite2-Country.tar.gz
+        curl -Ls "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country&license_key=$KEY&suffix=tar.gz" > GeoLite2-Country.tar.gz
 	# check the size of the downloaded file: if it's tiny then the download failed
 	# if failure then cat the file (it will state if the licence key was invalid)
 	if [ "$(stat -c %s GeoLite2-Country.tar.gz)" -lt 40 ]; then
