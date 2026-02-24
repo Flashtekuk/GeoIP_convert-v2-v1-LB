@@ -1,0 +1,2 @@
+# Set the below to your license key
+export LIC="6uVdVe_EyVEbJKIulFElpv6GtNiR0OQb3lZZN_mmk"
