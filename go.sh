@@ -14,6 +14,15 @@ apt update
 apt install -y geoip-bin gawk
 pip install geoip2-tools
 
+
+echo
+echo
+echo "About to attempt conversion..."
+echo
+echo "This might take a few moments..."
+echo
+echo
+
 /app/geoip_convert-v2-v1.sh ${LIC}
 
 MYIP=$(curl ifconfig.me/ip)
