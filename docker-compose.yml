@@ -1,0 +1,6 @@
+services:
+  converter:
+    image: geoip_convert-v2-v1:latest
+    volumes:
+      - .:/app
+    command: ["YOUR_GeoLite_API_key"]
