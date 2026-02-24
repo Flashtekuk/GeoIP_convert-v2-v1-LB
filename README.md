@@ -23,6 +23,7 @@ After downloading the `geoip_convert-v2-v1.tar` file, restore it to your local D
 
 ```bash
 docker load -i /path/to/geoip_convert-v2-v1.tar
+```
 
 ### 2. Prep the Docker Compose file 
 Download the docker-compose.yml from the repo and configure it with you MaxMind API key
@@ -33,17 +34,15 @@ run the Docker Compose file to start the conversion
 
 ```bash
 docker compose up 
-
+```
 
 ### 4. clean up Docker 
 after you have your file clean up Docker of the exited container 
 
 ```bash 
 dockr compose down
+```
 
-
-
-
-
+---
 ## License
 This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE) file for details.
