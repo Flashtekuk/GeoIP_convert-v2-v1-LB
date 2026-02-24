@@ -8,6 +8,7 @@ chmod +x geoip_convert-v2-v1.sh <br>
 <br>
 
 ** Insert docker steps here **
+docker run -it -v ${PWD}:/app python:2.7.18 bash -c /app/go.sh
 
 <br>
 ./geoip_convert-v2-v1.sh LicenceKey [CustomName] <br>
