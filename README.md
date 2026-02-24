@@ -2,9 +2,13 @@
 convert GeoLite2-Country v2 DB to GeoIP v1 Country Edition .dat file
 
 <br>
-git clone https://github.com/emphazer/GeoIP_convert-v2-v1 <br>
+git clone https://github.com/Flashtekuk/GeoIP_convert-v2-v1-LB<br>
 cd GeoIP_convert-v2-v1 <br>
 chmod +x geoip_convert-v2-v1.sh <br>
+<br>
+
+** Insert docker steps here **
+
 <br>
 ./geoip_convert-v2-v1.sh LicenceKey [CustomName] <br>
 <br>
