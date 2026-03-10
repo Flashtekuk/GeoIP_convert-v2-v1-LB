@@ -1,0 +1,13 @@
+credentials:
+  usernames:
+    admin:
+      email: "admin@company.com"
+      name: "Admin User"
+      password: "$2b$12$POGl5Rz8GyBzyBAfDy59leyRiahuIadMIb6/7ee4rd09aKh.C.dMO" # Hashed purple-prod-2026
+cookie:
+  expiry_days: 0.5
+  key: "a-very-long-and-secure-random-secret-key-2026"
+  name: "geoip_auth"
+preauthorized:
+  emails:
+    - "admin@company.com"

@@ -1,6 +1,24 @@
 services:
-  converter:
-    image: geoip_convert-v2-v1:latest
+  geoip-service:
+    image: repo.digiscout.uk/geoip_convert-v2-v1:latest
+    restart: unless-stopped
+    ports:
+      - "8501:8501"
     volumes:
-      - .:/app
-    command: ["YOUR_GeoLite_API_key"]
+      - ./config:/app/config:rw
+      - ./data:/app/data:rw      
+    environment:
+      - APP_ENV=production
+      - MASTER_KEY_FILE=/app/config/.master.key
+
+  geoip-worker:
+    image: repo.digiscout.uk/geoip_convert-v2-v1:latest
+    restart: unless-stopped
+    volumes:
+      - ./config:/app/config
+      - ./data:/app/data
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/app
+      - MODE=WORKER
+    entrypoint: ["python", "app/core/worker.py"]
