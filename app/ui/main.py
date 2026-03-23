@@ -10,6 +10,8 @@ import time
 from croniter import croniter
 from datetime import datetime
 from yaml.loader import SafeLoader
+from pathlib import Path
+
 from app.core.logger import get_ui_logger
 from app.core.security import encrypt_license, check_licence_status, check_schedule_status, is_valid_format
 from app.core.ssh_manager import generate_ssh_keys, get_public_key
@@ -22,7 +24,11 @@ from app.core.ssh_utils import remove_ssh_host_identity
 
 
 # Variables
-VERSION_NUMBER = "V1.1.3"
+# Read the version from the VERSION file 
+current_file = Path(__file__).resolve()
+root_dir = current_file.parent.parent.parent
+version_path = root_dir / "VERSION"
+VERSION_NUMBER = version_path.read_text().strip()
 
 logger = get_ui_logger()
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -170,6 +176,18 @@ if st.session_state["authentication_status"]:
                 saved_cron = f.read().strip()
     else:
             saved_cron = "0 10 * * 3" # Default: Weekly on a Wednesday @ 10AM
+    
+    @st.dialog("Task Execution Details")
+    def show_logs(log_data):
+        """Displays the detailed logs in a clean modal popup."""
+        if log_data and "ERROR LOGS" in str(log_data):
+            st.error("Errors detected during execution:")
+            st.code(log_data, language="bash")
+        elif log_data:
+            st.success("Execution Details:")
+            st.code(log_data, language="bash")
+        else:
+            st.info("No detailed logs available for this task")
     
     tab1, tab2, tab3, tab4, tab5 = st.tabs(["Settings", "Run History", "Scheduling", "Storage Management", "User Management"])
     
@@ -476,16 +494,48 @@ if st.session_state["authentication_status"]:
         if os.path.exists("data/history.db"):
             conn = sqlite3.connect("data/history.db")
             # Pull the last 50 runs, newest first
-            df = pd.read_sql_query("SELECT timestamp, task_type, status, details FROM task_history ORDER BY timestamp DESC LIMIT 50", conn)
+            df = pd.read_sql_query("SELECT id, timestamp, task_type, status, details FROM task_history ORDER BY timestamp DESC LIMIT 50", conn)
             conn.close()
 
             if not df.empty:
-                # Color coding the status for a production feel
-                def color_status(val):
-                    color = 'red' if val == 'Failed' else 'green' if val == 'Success' else 'orange'
-                    return f'color: {color}; font-weight: bold'
+                # --- Table Header ---
+                head_col1, head_col2, head_col3, head_col4 = st.columns([2, 2, 2, 1])
+                head_col1.markdown("**Timestamp**")
+                head_col2.markdown("**Task Type**")
+                head_col3.markdown("**Status**")
+                head_col4.markdown("**Action**")
+                st.divider()
 
-                st.dataframe(df.style.map(color_status, subset=['status']), width="stretch")
+                # --- Table Rows ---
+                for row in df.itertuples():
+                    col1, col2, col3, col4 = st.columns([2, 2, 2, 1])
+
+                    col1.write(row.timestamp)
+                    col2.write(row.task_type)
+
+                    # Color coding the status 
+                    if row.status == 'Success':
+                        col3.markdown(f":green[**{row.status}**]")
+                    elif row.status == 'Failed':
+                        col3.markdown(f":red[**{row.status}**]")
+                    else:
+                        col3.markdown(f":orange[**{row.status}**]")
+                    
+                    # Button 
+                    button_label = "📄 View Logs" if row.status in ['Failed', 'Partial'] else "ℹ️ Details"
+                    button_type = "primary" if row.status in ['Failed', 'Partial'] else "secondary"
+
+                    if col4.button(button_label, key=f"log_btn_{row.id}", type=button_type):
+                        show_logs(row.details)
+
+                    st.markdown("<br>", unsafe_allow_html=True)
+
+                # Color coding the status for a production feel
+                #def color_status(val):
+                #    color = 'red' if val == 'Failed' else 'green' if val == 'Success' else 'orange'
+                #    return f'color: {color}; font-weight: bold'
+
+                #st.dataframe(df.style.map(color_status, subset=['status']), width="stretch")
             else:
                 st.info("No history recorded yet. The worker will log tasks here once they run.")
         else:

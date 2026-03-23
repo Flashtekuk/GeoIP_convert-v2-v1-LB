@@ -51,9 +51,11 @@ def run_production_pipeline(trigger_type="Scheduled"):
         # 4. Deployment Logic
         if os.path.exists(output_file):
             file_size_bytes = os.path.getsize(output_file)
-            size_mb = f"{round(file_size_bytes / (1024 * 1024), 2)} MB"
-            
+            size_mb = f"{round(file_size_bytes / (1024 * 1024), 2)} MB"            
             all_success = True
+
+            deployment_errors = []
+
             if deployment_mode != "Local Only":
                 servers = load_servers()
                 for server in servers:
@@ -62,14 +64,28 @@ def run_production_pipeline(trigger_type="Scheduled"):
                     except Exception as e:
                         logger.exception(f"Deploy failed to {server['Host']}: {e}")
                         all_success = False
+                        host_name = server.get('Host', 'Unknown Host')
+                        deployment_errors.append(f"--- Failed on {host_name} ---\nError: {str(e)}")
             
-            # Log status
+            # Determine the final status
             status = 'Success' if all_success else 'Partial'
+            if not all_success and len(servers) == len(deployment_errors):
+                status = 'Failed'
+
+            # Build the base detail message
             log_msg = f"Mode: {deployment_mode} | {date_str}"
             if skip_bash:
                 log_msg += " (Used existing disk data)"
-                
+
+            # Concatenate the errors to the log details
+            if deployment_errors:
+                error_trace = "\n\n".join(deployment_errors)
+                log_msg = f"{log_msg}\n\n[ERROR LOGS]\n{error_trace}"
+
+            # Save it to the database 
             log_task(trigger_type, status, size_mb, log_msg)
+
+            
             return status
         else:
             raise FileNotFoundError(f"Pipeline error: {output_file} not found.")
