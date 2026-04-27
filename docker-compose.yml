@@ -2,5 +2,5 @@ services:
   converter:
     image: geoip_convert-v2-v1:latest
     volumes:
-      - .:/app
+      - ./geoip_data:/output # /geoip_data folder needs to be created next to this file 
     command: ["YOUR_GeoLite_API_key"]
