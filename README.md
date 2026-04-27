@@ -28,16 +28,21 @@ docker load -i /path/to/geoip_convert-v2-v1.tar
 ### 2. Prep the Docker Compose file 
 Download the docker-compose.yml from the repo and configure it with you MaxMind API key
 
+### 3. Create needed folder on host 
+Next to the docker-compose.yml create a folder called "geoip_data", this is where the container will dump the .dat files   
 
-### 3. Run the conversion 
-run the Docker Compose file to start the conversion 
+
+### 4. Run the conversion 
+Run the Docker Compose file to start the conversion 
 
 ```bash
 docker compose up 
 ```
 
-### 4. clean up Docker 
-after you have your file clean up Docker of the exited container 
+Wait for the container to enter a Exited state 
+
+### 5. clean up Docker 
+Clean up Docker container of the exited container
 
 ```bash 
 dockr compose down

@@ -20,12 +20,17 @@ RUN apt-get update -o Acquire::Check-Valid-Until=false || true && \
 # Install Python depenendencies
 RUN pip install --no-cache-dir geoip2-tools
 
-# Copy the local script into the container and make it executable
-COPY geoip_convert-v2-v1.sh .
-RUN chmod +x geoip_convert-v2-v1.sh
+# Copy scripts
+COPY geoip_convert-v2-v1.sh /usr/local/bin/geoip_convert-v2-v1.sh
+COPY launcher.sh /usr/local/bin/launcher.sh
 
-# Set the enterypoint to the script 
-ENTRYPOINT [ "./geoip_convert-v2-v1.sh" ]
+RUN chmod +x /usr/local/bin/geoip_convert-v2-v1.sh /usr/local/bin/launcher.sh
+
+# Create the output directory inside the container
+RUN mkdir /output
+
+# The launcher is now the entrypoint
+ENTRYPOINT [ "/usr/local/bin/launcher.sh" ]
 
 
 # Build Command 
